@@ -5,34 +5,29 @@
   <title>jQuery UI Auto complete - Default functionality</title>  
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">  
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>  
-  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>   
- <script type="text/javascript">
-		$(document).ready(function() {
-			$("#Name").live("blur", function(e) {
-				$('#msg').hide();
-				if ($('#Name').val() == null || $('#Name').val() == "") {
-					$('#msg').show();
-					$("#msg").html("Username is required field.").css("color", "red");
-				} else {
-					$.ajax({
-						type: "POST",
-						url: '${pageContext.request.contextPath }/employee/search',
-						data: $('#Name').serialize(),
-						dataType: "html",
-						cache: false,
-						success: function(msg) {
-							$('#msg').show();
-							$("#msg").html(msg);
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							$('#msg').show();
-							$("#msg").html(textStatus + " " + errorThrown);
-						}
-					});
-				}
-			});
-		});
-	</script> 
+  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>  
+  <link rel="stylesheet" href="/resources/demos/style.css">  
+  <script>  
+  $(function() {  
+    $( "#Name" ).autocomplete({  
+      source:'${pageContext.request.contextPath }/employee/search'  
+    	  data: JSON.stringify(#Name),
+          dataType: 'json',
+          cache: false,
+          timeout: 600000,
+          success: function (data) {
+
+              var json = "<h4>Ajax Response</h4><pre>"
+                  + JSON.stringify(data, null, 4) + "</pre>";
+              $('#feedback').html(json);
+
+              console.log("SUCCESS : ", data);
+              $("#btn-search").prop("disabled", false);
+
+          },
+    });  
+  });  
+  </script>  
 </head>  
 <body>  
 <div class="ui-widget">  

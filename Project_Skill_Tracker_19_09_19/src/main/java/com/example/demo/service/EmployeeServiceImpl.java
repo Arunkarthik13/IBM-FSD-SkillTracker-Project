@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.configuration.plist.ParseException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 	public EmployeeRepository employeeRepository;
 	
 	public List<String> search(String keyword) {
-		return employeeRepository.search(keyword);
+		return  employeeRepository.search(keyword);
+		
 	}
 	
 	
@@ -138,10 +140,46 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 	
 	@Override
-	public void deleteById(int id) {
-		System.out.println(employeeRepository.findById(id).toString());
-		employeeRepository.deleteById(id);
+	public EmployeeDto deleteById(int id) {
 		
+		ModelMapper mapper=new ModelMapper();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		Optional<Employee> result=employeeRepository.findById(id);
+		
+		 Employee emp = null;
+		if(result.isPresent())
+		{
+		emp=result.get();
+		}
+		else
+			System.out.println("the invalid id is:"+id);
+		
+		EmployeeDto eDto=mapper.map(emp,EmployeeDto.class);		
+		employeeRepository.delete(emp);
+		return eDto;
+		
+	}
+
+
+	@Override
+	public EmployeeDto updateProject(EmployeeDto emp, int id) {
+		// TODO Auto-generated method stub
+		Optional<Employee> employeeDetails = employeeRepository.findById(id);
+	
+		Employee employeeUpdate = null;
+		if(employeeDetails.isPresent()) {
+			employeeUpdate = employeeDetails.get();
+		}
+		employeeUpdate.setName(emp.getName());
+		employeeUpdate.setMobileNumber(emp.getMobileNumber());
+		employeeUpdate.setEmail(emp.getEmail());
+		//employeeUpdate.setSkills(emp.getSkills());
+		
+		employeeRepository.save(employeeUpdate);
+		ModelMapper model = new ModelMapper();
+		model.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		EmployeeDto eDto = model.map(employeeUpdate, EmployeeDto.class);
+		return eDto;
 	}
 
 }
